@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>歷屆吉星高照圓滿回報</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  padding:24px 14px;
+  font-family:"Noto Sans TC",sans-serif;
+  background:#f6f1e7;
+  color:#493a2c;
+}
+.container{
+  max-width:520px;
+  margin:auto;
+  background:#fffdf8;
+  border:1px solid #d8c49b;
+  border-radius:18px;
+  padding:26px 22px;
+  box-shadow:0 5px 20px #8c765022;
+}
+h1{
+  text-align:center;
+  color:#8a652e;
+  font-size:25px;
+  margin:5px 0 8px;
+}
+.subtitle{
+  text-align:center;
+  color:#9a8056;
+  margin-bottom:25px;
+}
+.intro{line-height:1.9}
+label{
+  display:block;
+  margin:17px 0 7px;
+  font-weight:bold;
+}
+input,textarea,select{
+  width:100%;
+  padding:13px;
+  border:1px solid #d8c9aa;
+  border-radius:9px;
+  background:#fff;
+  font-size:16px;
+}
+textarea{min-height:90px;resize:vertical}
+button{
+  width:100%;
+  margin-top:25px;
+  padding:15px;
+  border:0;
+  border-radius:10px;
+  background:#96733c;
+  color:white;
+  font-size:17px;
+  font-weight:bold;
+}
+.note{
+  text-align:center;
+  font-size:13px;
+  color:#98876e;
+  margin-top:18px;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>吉星高照・圓滿回報</h1>
+<div class="subtitle">地藏菩薩聖號法供養</div>
+
+<p class="intro">
+當家師父吉祥：<br>
+弟子回報以下法供養功課已圓滿。
+</p>
+
+<form id="reportForm">
+<label>🔸 活動名稱</label>
+<select id="activity" required>
+<option value="">請選擇</option>
+<option>吉星高照</option>
+<option>蓮花宴</option>
+<option>不確定</option>
+</select>
+
+<label>🔸 持誦者</label>
+<input id="holder" required placeholder="請填寫姓名">
+
+<label>🔸 法供養功德名單</label>
+<textarea id="donors" required placeholder="請填寫功德名單"></textarea>
+
+<label>🔸 編號</label>
+<input id="number" required placeholder="請自行填寫編號">
+
+<label>🔸 地藏聖號數量</label>
+<input id="chant" required placeholder="請填寫數量">
+
+<label>🔸 滅定業真言數量</label>
+<input id="mantra" required placeholder="請填寫數量">
+
+<p class="intro">
+以上聖號／咒語皆未迴向，懇請師父銷編號。<br>
+感恩當家師父慈悲加持。<br><br>
+懺悔弟子虔誠頂禮。
+</p>
+
+<button type="submit">發送圓滿回報</button>
+</form>
+
+<div class="note">南無大願地藏王菩薩 🙏</div>
+</div>
+<script>
+document.getElementById("reportForm").addEventListener("submit",function(e){
+  e.preventDefault();
+  alert("表單已完成，LINE 發送功能尚待設定。");
+});
+</script>
+</body>
+</html>

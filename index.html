@@ -5,67 +5,39 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>歷屆吉星高照圓滿回報</title>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
 <style>
 *{box-sizing:border-box}
 body{
-  margin:0;
-  padding:24px 14px;
+  margin:0;padding:24px 14px;
   font-family:"Noto Sans TC",sans-serif;
-  background:#f6f1e7;
-  color:#493a2c;
+  background:#f6f1e7;color:#493a2c;
 }
 .container{
-  max-width:520px;
-  margin:auto;
-  background:#fffdf8;
-  border:1px solid #d8c49b;
-  border-radius:18px;
-  padding:26px 22px;
+  max-width:520px;margin:auto;
+  background:#fffdf8;border:1px solid #d8c49b;
+  border-radius:18px;padding:26px 22px;
   box-shadow:0 5px 20px #8c765022;
 }
-h1{
-  text-align:center;
-  color:#8a652e;
-  font-size:25px;
-  margin:5px 0 8px;
-}
-.subtitle{
-  text-align:center;
-  color:#9a8056;
-  margin-bottom:25px;
-}
+h1{text-align:center;color:#8a652e;font-size:25px}
+.subtitle{text-align:center;color:#9a8056;margin-bottom:25px}
 .intro{line-height:1.9}
-label{
-  display:block;
-  margin:17px 0 7px;
-  font-weight:bold;
-}
+label{display:block;margin:17px 0 7px;font-weight:bold}
 input,textarea,select{
-  width:100%;
-  padding:13px;
-  border:1px solid #d8c9aa;
-  border-radius:9px;
-  background:#fff;
-  font-size:16px;
+  width:100%;padding:13px;
+  border:1px solid #d8c9aa;border-radius:9px;
+  background:#fff;font-size:16px;
 }
 textarea{min-height:90px;resize:vertical}
 button{
-  width:100%;
-  margin-top:25px;
-  padding:15px;
-  border:0;
-  border-radius:10px;
-  background:#96733c;
-  color:white;
-  font-size:17px;
-  font-weight:bold;
+  width:100%;margin-top:25px;padding:15px;
+  border:0;border-radius:10px;
+  background:#96733c;color:white;
+  font-size:17px;font-weight:bold;
 }
-.note{
-  text-align:center;
-  font-size:13px;
-  color:#98876e;
-  margin-top:18px;
-}
+button:disabled{opacity:.55}
+.note{text-align:center;font-size:13px;color:#98876e;margin-top:18px}
+#status{text-align:center;margin-top:15px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -81,7 +53,7 @@ button{
 <form id="reportForm">
 <label>🔸 活動名稱</label>
 <select id="activity" required>
-<option value="">請選擇</option>
+<option value="">請選擇活動</option>
 <option>吉星高照</option>
 <option>蓮花宴</option>
 <option>不確定</option>
@@ -108,16 +80,125 @@ button{
 懺悔弟子虔誠頂禮。
 </p>
 
-<button type="submit">發送圓滿回報</button>
+<button id="sendBtn" type="submit" disabled>
+正在連接 LINE...
+</button>
 </form>
 
+<div id="status">正在確認 LINE 身分…</div>
 <div class="note">南無大願地藏王菩薩 🙏</div>
 </div>
+
 <script>
-document.getElementById("reportForm").addEventListener("submit",function(e){
+const LIFF_ID = "2012783758-KQ6SJbXI";
+
+const form = document.getElementById("reportForm");
+const sendBtn = document.getElementById("sendBtn");
+const statusBox = document.getElementById("status");
+
+let liffReady = false;
+
+async function initializeLIFF(){
+  try {
+    await liff.init({ liffId: LIFF_ID });
+
+    if (!liff.isInClient()) {
+      statusBox.textContent =
+        "請使用 LINE 開啟本回報網頁。";
+      return;
+    }
+
+    if (!liff.isLoggedIn()) {
+      statusBox.textContent =
+        "請先登入 LINE，再重新開啟回報網頁。";
+      return;
+    }
+
+    const context = liff.getContext();
+
+    if (!context ||
+        !["utou","group","room"].includes(context.type)) {
+      statusBox.textContent =
+        "請從與官方帳號的一對一聊天室內開啟本網頁。";
+      return;
+    }
+
+    liffReady = true;
+    sendBtn.disabled = false;
+    sendBtn.textContent = "發送圓滿回報";
+    statusBox.textContent = "LINE 已連線，可以填寫回報。";
+
+  } catch (error) {
+    statusBox.textContent =
+      "LINE 連線失敗，請重新開啟網頁。";
+    console.error(error);
+  }
+}
+
+form.addEventListener("submit", async function(e){
   e.preventDefault();
-  alert("表單已完成，LINE 發送功能尚待設定。");
+
+  if (!liffReady) {
+    alert("LINE 尚未連線，請重新開啟網頁。");
+    return;
+  }
+
+  const activity = document.getElementById("activity").value;
+  const holder = document.getElementById("holder").value.trim();
+  const donors = document.getElementById("donors").value.trim();
+  const number = document.getElementById("number").value.trim();
+  const chant = document.getElementById("chant").value.trim();
+  const mantra = document.getElementById("mantra").value.trim();
+
+  const message =
+`當家師父吉祥：
+
+弟子回報${activity}法供養10萬句地藏菩薩聖號已圓滿。
+
+🔸持誦者：${holder}
+🔸法供養功德名單：${donors}
+🔸編號：${number}
+🔸地藏聖號數量：${chant}
+🔸滅定業真言數量：${mantra}
+
+以上聖號／咒語皆未迴向，懇請師父銷編號。
+感恩當家師父慈悲加持。
+
+懺悔弟子虔誠頂禮`;
+
+  if (message.length > 5000) {
+    alert("回報內容過長，請縮短後再發送。");
+    return;
+  }
+
+  if (!confirm("請確認資料正確，確定發送給目前的 LINE 聊天室嗎？")) {
+    return;
+  }
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = "正在發送...";
+  statusBox.textContent = "請稍候，正在傳送回報…";
+
+  try {
+    await liff.sendMessages([
+      { type: "text", text: message }
+    ]);
+
+    statusBox.textContent =
+      "圓滿回報已成功傳送！感恩，阿彌陀佛。";
+    sendBtn.textContent = "發送成功";
+
+  } catch (error) {
+    console.error(error);
+    statusBox.textContent =
+      "發送失敗，請確認從 LINE 一對一聊天室開啟，並重新嘗試。";
+    sendBtn.disabled = false;
+    sendBtn.textContent = "重新發送";
+    alert("發送失敗：" + (error.message || "請重新開啟 LINE 網頁"));
+  }
 });
+
+initializeLIFF();
 </script>
 </body>
 </html>

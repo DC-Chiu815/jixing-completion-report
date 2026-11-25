@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>歷屆吉星高照圓滿回報</title>
 <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
 <style>
 *{box-sizing:border-box}
 body{
@@ -29,6 +30,13 @@ input,textarea,select{
   background:#fff;font-size:16px;
 }
 textarea{min-height:90px;resize:vertical}
+.unit-field{
+  display:flex;align-items:center;gap:10px;
+}
+.unit-field input{flex:1;min-width:0}
+.unit-field span{
+  font-size:18px;font-weight:bold;color:#8a652e;
+}
 button{
   width:100%;margin-top:25px;padding:15px;
   border:0;border-radius:10px;
@@ -38,17 +46,19 @@ button{
 }
 button:disabled{opacity:.55;cursor:not-allowed}
 .note{text-align:center;font-size:13px;color:#98876e;margin-top:18px}
-#status{text-align:center;margin-top:15px;line-height:1.9;white-space:pre-line}
+#status{
+  text-align:center;margin-top:15px;
+  line-height:1.9;white-space:pre-line;
+}
 #successBox{
-  display:none;
-  text-align:center;
-  line-height:2;
-  padding:25px 10px;
+  display:none;text-align:center;
+  line-height:2;padding:25px 10px;
 }
 #successBox h2{color:#8a652e}
 #backBtn{display:none;text-decoration:none}
 </style>
 </head>
+
 <body>
 <div class="container">
 
@@ -63,27 +73,33 @@ button:disabled{opacity:.55;cursor:not-allowed}
 </p>
 
 <label>🔸 活動名稱</label>
-<select id="activity" required>
-<option value="">請選擇活動</option>
-<option>吉星高照</option>
-<option>蓮花宴</option>
-<option>不確定</option>
+<select id="activity">
+<option value="">請選擇活動（可不填）</option>
+<option value="吉星高照">吉星高照</option>
+<option value="蓮花宴">蓮花宴</option>
+<option value="不確定">不確定</option>
 </select>
 
-<label>🔸 持誦者</label>
+<label>🔸 持誦者（必填）</label>
 <input id="holder" required placeholder="請填寫姓名">
 
 <label>🔸 法供養功德名單</label>
-<textarea id="donors" required placeholder="請填寫功德名單"></textarea>
+<textarea id="donors" placeholder="請填寫功德名單（可不填）"></textarea>
 
 <label>🔸 編號</label>
-<input id="number" required placeholder="請自行填寫編號">
+<input id="number" placeholder="請自行填寫編號（可不填）">
 
-<label>🔸 地藏聖號數量</label>
-<input id="chant" required placeholder="請填寫數量">
+<label>🔸 地藏聖號數量（必填）</label>
+<div class="unit-field">
+<input id="chant" type="number" min="0" step="any" required placeholder="請填寫數字">
+<span>萬</span>
+</div>
 
-<label>🔸 滅定業真言數量</label>
-<input id="mantra" required placeholder="請填寫數量">
+<label>🔸 滅定業真言數量（必填）</label>
+<div class="unit-field">
+<input id="mantra" type="number" min="0" step="any" required placeholder="請填寫數字">
+<span>萬</span>
+</div>
 
 <p class="intro">
 以上聖號／咒語皆未迴向，懇請師父銷編號。<br>
@@ -94,6 +110,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 <button id="sendBtn" type="submit" disabled>
 正在連接 LINE...
 </button>
+
 </form>
 
 <div id="status">正在確認 LINE 身分…</div>
@@ -104,6 +121,7 @@ button:disabled{opacity:.55;cursor:not-allowed}
 感恩師父慈悲加持。<br>
 祝福您所求滿願，阿彌陀佛。
 </p>
+
 <a id="backBtn" href="https://lin.ee/6bhrLz7" target="_blank" rel="noopener">
 <button type="button">返回 LINE 官方帳號</button>
 </a>
@@ -151,8 +169,8 @@ async function initializeLIFF(){
     statusBox.textContent = "LINE 已連線，可以填寫回報。";
 
   } catch (error) {
-    statusBox.textContent = "LINE 連線失敗，請重新開啟網頁。";
     console.error(error);
+    statusBox.textContent = "LINE 連線失敗，請重新開啟網頁。";
   }
 }
 
@@ -164,28 +182,46 @@ form.addEventListener("submit", async function(e){
     return;
   }
 
-  const activity = document.getElementById("activity").value;
+  const activity = document.getElementById("activity").value.trim();
   const holder = document.getElementById("holder").value.trim();
   const donors = document.getElementById("donors").value.trim();
   const number = document.getElementById("number").value.trim();
   const chant = document.getElementById("chant").value.trim();
   const mantra = document.getElementById("mantra").value.trim();
 
-  const message =
-`當家師父吉祥：
+  if (!holder || chant === "" || mantra === "") {
+    alert("請填寫必填資料：持誦者、地藏聖號數量及滅定業真言數量。");
+    return;
+  }
 
-弟子回報${activity}法供養10萬句地藏菩薩聖號已圓滿。
+  if (Number(chant) < 0 || Number(mantra) < 0 ||
+      !Number.isFinite(Number(chant)) ||
+      !Number.isFinite(Number(mantra))) {
+    alert("聖號及真言數量請填寫有效的非負數字。");
+    return;
+  }
 
-🔸持誦者：${holder}
-🔸法供養功德名單：${donors}
-🔸編號：${number}
-🔸地藏聖號數量：${chant}
-🔸滅定業真言數量：${mantra}
+  const lines = [
+    "當家師父吉祥：",
+    "",
+    "弟子回報以下法供養功課已圓滿。",
+    ""
+  ];
 
-以上聖號／咒語皆未迴向，懇請師父銷編號。
-感恩當家師父慈悲加持。
+  if (activity) lines.push("🔸活動名稱：" + activity);
+  lines.push("🔸持誦者：" + holder);
+  if (donors) lines.push("🔸法供養功德名單：" + donors);
+  if (number) lines.push("🔸編號：" + number);
 
-懺悔弟子虔誠頂禮`;
+  lines.push("🔸地藏聖號數量：" + chant + "萬");
+  lines.push("🔸滅定業真言數量：" + mantra + "萬");
+  lines.push("");
+  lines.push("以上聖號／咒語皆未迴向，懇請師父銷編號。");
+  lines.push("感恩當家師父慈悲加持。");
+  lines.push("");
+  lines.push("懺悔弟子虔誠頂禮");
+
+  const message = lines.join("\n");
 
   if (message.length > 5000) {
     alert("回報內容過長，請縮短後再發送。");

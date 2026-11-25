@@ -89,15 +89,15 @@ button:disabled{opacity:.55;cursor:not-allowed}
 <label>🔸 編號</label>
 <input id="number" placeholder="請自行填寫編號（可不填）">
 
-<label>🔸 地藏聖號數量（必填）</label>
+<label>🔸 地藏聖號數量（至少填寫一項）</label>
 <div class="unit-field">
-<input id="chant" type="number" min="0" step="any" required placeholder="請填寫數字">
+<input id="chant" type="number" min="0" step="any" placeholder="請填寫數字">
 <span>萬</span>
 </div>
 
-<label>🔸 滅定業真言數量（必填）</label>
+<label>🔸 滅定業真言數量（至少填寫一項）</label>
 <div class="unit-field">
-<input id="mantra" type="number" min="0" step="any" required placeholder="請填寫數字">
+<input id="mantra" type="number" min="0" step="any" placeholder="請填寫數字">
 <span>萬</span>
 </div>
 
@@ -189,14 +189,22 @@ form.addEventListener("submit", async function(e){
   const chant = document.getElementById("chant").value.trim();
   const mantra = document.getElementById("mantra").value.trim();
 
-  if (!holder || chant === "" || mantra === "") {
-    alert("請填寫必填資料：持誦者、地藏聖號數量及滅定業真言數量。");
+  if (!holder) {
+    alert("請填寫持誦者姓名。");
+    document.getElementById("holder").focus();
     return;
   }
 
-  if (Number(chant) < 0 || Number(mantra) < 0 ||
-      !Number.isFinite(Number(chant)) ||
-      !Number.isFinite(Number(mantra))) {
+  if (chant === "" && mantra === "") {
+    alert("地藏聖號數量或滅定業真言數量，至少填寫一項。");
+    document.getElementById("chant").focus();
+    return;
+  }
+
+  if (
+    (chant !== "" && (!Number.isFinite(Number(chant)) || Number(chant) < 0)) ||
+    (mantra !== "" && (!Number.isFinite(Number(mantra)) || Number(mantra) < 0))
+  ) {
     alert("聖號及真言數量請填寫有效的非負數字。");
     return;
   }
@@ -213,8 +221,14 @@ form.addEventListener("submit", async function(e){
   if (donors) lines.push("🔸法供養功德名單：" + donors);
   if (number) lines.push("🔸編號：" + number);
 
-  lines.push("🔸地藏聖號數量：" + chant + "萬");
-  lines.push("🔸滅定業真言數量：" + mantra + "萬");
+  if (chant !== "") {
+    lines.push("🔸地藏聖號數量：" + chant + "萬");
+  }
+
+  if (mantra !== "") {
+    lines.push("🔸滅定業真言數量：" + mantra + "萬");
+  }
+
   lines.push("");
   lines.push("以上聖號／咒語皆未迴向，懇請師父銷編號。");
   lines.push("感恩當家師父慈悲加持。");

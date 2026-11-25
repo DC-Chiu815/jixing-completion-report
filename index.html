@@ -34,23 +34,34 @@ button{
   border:0;border-radius:10px;
   background:#96733c;color:white;
   font-size:17px;font-weight:bold;
+  cursor:pointer;
 }
-button:disabled{opacity:.55}
+button:disabled{opacity:.55;cursor:not-allowed}
 .note{text-align:center;font-size:13px;color:#98876e;margin-top:18px}
-#status{text-align:center;margin-top:15px;line-height:1.7}
+#status{text-align:center;margin-top:15px;line-height:1.9;white-space:pre-line}
+#successBox{
+  display:none;
+  text-align:center;
+  line-height:2;
+  padding:25px 10px;
+}
+#successBox h2{color:#8a652e}
+#backBtn{display:none;text-decoration:none}
 </style>
 </head>
 <body>
 <div class="container">
+
 <h1>吉星高照・圓滿回報</h1>
 <div class="subtitle">地藏菩薩聖號法供養</div>
+
+<form id="reportForm">
 
 <p class="intro">
 當家師父吉祥：<br>
 弟子回報以下法供養功課已圓滿。
 </p>
 
-<form id="reportForm">
 <label>🔸 活動名稱</label>
 <select id="activity" required>
 <option value="">請選擇活動</option>
@@ -86,6 +97,18 @@ button:disabled{opacity:.55}
 </form>
 
 <div id="status">正在確認 LINE 身分…</div>
+
+<div id="successBox">
+<h2>🙏 回報圓滿！</h2>
+<p>
+感恩師父慈悲加持。<br>
+祝福您所求滿願，阿彌陀佛。
+</p>
+<a id="backBtn" href="https://lin.ee/6bhrLz7" target="_blank" rel="noopener">
+<button type="button">返回 LINE 官方帳號</button>
+</a>
+</div>
+
 <div class="note">南無大願地藏王菩薩 🙏</div>
 </div>
 
@@ -95,6 +118,8 @@ const LIFF_ID = "2012783758-KQ6SJbXI";
 const form = document.getElementById("reportForm");
 const sendBtn = document.getElementById("sendBtn");
 const statusBox = document.getElementById("status");
+const successBox = document.getElementById("successBox");
+const backBtn = document.getElementById("backBtn");
 
 let liffReady = false;
 
@@ -103,23 +128,20 @@ async function initializeLIFF(){
     await liff.init({ liffId: LIFF_ID });
 
     if (!liff.isInClient()) {
-      statusBox.textContent =
-        "請使用 LINE 開啟本回報網頁。";
+      statusBox.textContent = "請使用 LINE 開啟本回報網頁。";
       return;
     }
 
     if (!liff.isLoggedIn()) {
-      statusBox.textContent =
-        "請先登入 LINE，再重新開啟回報網頁。";
+      statusBox.textContent = "請先登入 LINE，再重新開啟回報網頁。";
       return;
     }
 
     const context = liff.getContext();
 
-    if (!context ||
-        !["utou","group","room"].includes(context.type)) {
+    if (!context || !["utou","group","room"].includes(context.type)) {
       statusBox.textContent =
-        "請從與官方帳號的一對一聊天室內開啟本網頁。";
+        "請從與官方帳號的聊天室內開啟本網頁。";
       return;
     }
 
@@ -129,8 +151,7 @@ async function initializeLIFF(){
     statusBox.textContent = "LINE 已連線，可以填寫回報。";
 
   } catch (error) {
-    statusBox.textContent =
-      "LINE 連線失敗，請重新開啟網頁。";
+    statusBox.textContent = "LINE 連線失敗，請重新開啟網頁。";
     console.error(error);
   }
 }
@@ -184,15 +205,15 @@ form.addEventListener("submit", async function(e){
       { type: "text", text: message }
     ]);
 
-    statusBox.textContent =
-  "🙏 回報圓滿！\n感恩師父慈悲加持。\n祝福您所求滿願，阿彌陀佛。";
-
-sendBtn.textContent = "回報圓滿";
+    form.style.display = "none";
+    statusBox.style.display = "none";
+    successBox.style.display = "block";
+    backBtn.style.display = "block";
 
   } catch (error) {
     console.error(error);
     statusBox.textContent =
-      "發送失敗，請確認從 LINE 一對一聊天室開啟，並重新嘗試。";
+      "發送失敗，請確認從 LINE 聊天室開啟，並重新嘗試。";
     sendBtn.disabled = false;
     sendBtn.textContent = "重新發送";
     alert("發送失敗：" + (error.message || "請重新開啟 LINE 網頁"));
